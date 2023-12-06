@@ -1,5 +1,10 @@
-.App {
-  text-align: center;
+@import url(./css/global.css);
+
+.App { 
+ min-width: 100vw; 
+ min-height: 100vh; 
+ display: flex; 
+ flex-direction: column;
 }
 
 .App-logo {
@@ -14,14 +19,41 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: var(--dark-1);
+  min-height: 5vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  color: var(--light-1);
+  padding: 1em;
+} 
+
+.App-header h1 {
+  font-size: calc(24px + 0.7vmin); 
+  margin-bottom: -1em;
+}
+
+.App-header h6 {
+  font-size: calc(10px + 0.5vmin); 
+  font-weight: lighter;
+} 
+
+.cm-area {
+  padding: 0em 1em 1em 1em;
+  background-color: var(--dark-1);
+}
+
+.cm-area h6 {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(10px + 0.5vmin); 
+  margin: 0;
+  color: var(--dark-3);
+} 
+
+.cm-area hr { 
+  border: none;
+  height: 1px; 
+  background-color: var(--dark-2); /* Replace with your desired color */
 }
 
 .App-link {
