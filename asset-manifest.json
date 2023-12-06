@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/ZiadMAhmedW.github.io/static/css/main.f855e6bc.css",
-    "main.js": "/ZiadMAhmedW.github.io/static/js/main.5421c128.js",
-    "static/js/787.cb331ea4.chunk.js": "/ZiadMAhmedW.github.io/static/js/787.cb331ea4.chunk.js",
-    "static/media/logo.svg": "/ZiadMAhmedW.github.io/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/ZiadMAhmedW.github.io/index.html",
-    "main.f855e6bc.css.map": "/ZiadMAhmedW.github.io/static/css/main.f855e6bc.css.map",
-    "main.5421c128.js.map": "/ZiadMAhmedW.github.io/static/js/main.5421c128.js.map",
-    "787.cb331ea4.chunk.js.map": "/ZiadMAhmedW.github.io/static/js/787.cb331ea4.chunk.js.map"
+    "main.css": "/tomasulo_react/static/css/main.f855e6bc.css",
+    "main.js": "/tomasulo_react/static/js/main.201df01c.js",
+    "static/js/787.cb331ea4.chunk.js": "/tomasulo_react/static/js/787.cb331ea4.chunk.js",
+    "static/media/logo.svg": "/tomasulo_react/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/tomasulo_react/index.html",
+    "main.f855e6bc.css.map": "/tomasulo_react/static/css/main.f855e6bc.css.map",
+    "main.201df01c.js.map": "/tomasulo_react/static/js/main.201df01c.js.map",
+    "787.cb331ea4.chunk.js.map": "/tomasulo_react/static/js/787.cb331ea4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.5421c128.js"
+    "static/js/main.201df01c.js"
   ]
 }
