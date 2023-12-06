@@ -3,6 +3,7 @@
 .App { 
  min-width: 100vw; 
  min-height: 100vh; 
+ background-color: var(--dark-0);
  display: flex; 
  flex-direction: column;
 }
@@ -19,7 +20,7 @@
 }
 
 .App-header {
-  background-color: var(--dark-1);
+  background-color: var(--dark-0);
   min-height: 5vh;
   display: flex;
   flex-direction: column;
@@ -39,13 +40,17 @@
 } 
 
 .cm-area {
-  padding: 0em 1em 1em 1em;
+  padding: 0em 1em 1em 1em; 
+  border: 0px solid; 
+  border-radius: 0.5em;
   background-color: var(--dark-1);
+  animation: fadeInBottom 2s ease 0s 1 normal forwards;
 }
 
 .cm-area h6 {
   font-family: 'Courier New', Courier, monospace;
   font-size: calc(10px + 0.5vmin); 
+  padding-top: 1em;
   margin: 0;
   color: var(--dark-3);
 } 
@@ -60,11 +65,14 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes fadeInBottom {
+	0% {
+		opacity: 0;
+		transform: translateY(50px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
