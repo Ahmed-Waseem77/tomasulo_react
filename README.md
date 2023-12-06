@@ -11,4 +11,5 @@ As any basic ReactJS App:
 npm install
 cd tomasulo_react
 npm start
-```
+``` 
+
