@@ -26,7 +26,7 @@ class Riscv16TextArea extends React.Component {
     componentDidMount() {
         const editor = this.editorRef.editor;
         if (editor) {
-            editor.setSize(null, '100%');
+            editor.setSize(null, '20vh');
         }
     } 
 
@@ -47,7 +47,7 @@ class Riscv16TextArea extends React.Component {
                     mode: "riscv16",
                     theme: "material",
                     viewportMargin: Infinity
-                }} 
+                }}  
             />  
         );
     };

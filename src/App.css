@@ -1,10 +1,10 @@
 @import url(./css/global.css);
 
 .App { 
- min-height: 100vh; 
- min-width: 100vw;
- max-width: max-content;
- background-color: var(--dark-0);
+  min-height: 100vh; 
+  min-width: 100vw;
+  max-width: max-content;
+  background-color: var(--dark-0);
 }
 
 .App-logo {
@@ -85,8 +85,8 @@
   background-color: var(--dark-0);
   border: 0px solid; 
   border-radius: 0.5em;
-  max-width: 100%;
-  min-width: 100%;
+  max-width: 100vw;
+  min-width: 100vw;
   animation: fadeInBottom 2s ease 0s 1 normal forwards;
 } 
 

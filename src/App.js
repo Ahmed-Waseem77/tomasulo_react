@@ -36,7 +36,7 @@ function App() {
             <h6>riscv16 code</h6> 
             <hr></hr>
             <Riscv16TextArea ref={textAreaRef}/>
-            <button className="generic-button" onClick={handleButtonClick}>Begin</button>
+            <button className="generic-button" onClick={handleButtonClick}>BEGIN</button>
           </div>
           <GenericTable columns={["INSTRUCTION", "ISSUE", "EXECUTE BEGIN", "EXECUTE END", "WRITE RESULT"]}
                         data={[["ADD",0,0,0,0],["ADD",0,0,0,0],["ADD",0,0,0,0]]}

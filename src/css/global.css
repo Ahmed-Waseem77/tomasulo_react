@@ -7,7 +7,7 @@
    --dark-4:       #677c86;
    --dark-5:       #788d97;
    --dark-6:       #8a9ba8; 
-   --dark-7:      #9cb0bc;
+   --dark-7:       #9cb0bc;
    --light-1:      #eceff1; 
    --accent-red:   #f07178; 
    --accent-purple:#C792EA;
@@ -21,7 +21,7 @@
    all: unset;
    color: var(--light-1); 
    background-color: var(--dark-3);
-   font-family: 'Courier New', Courier, monospace; 
+   font-family: Calibri, 'Trebuchet MS', sans-serif; 
    font-weight: bold;
    padding: 0.25em 0.5em 0.25em 0.5em; 
    border-radius: 0.25em; 

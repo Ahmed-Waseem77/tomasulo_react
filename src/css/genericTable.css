@@ -2,6 +2,7 @@
 .generic-table {
     max-width: 80vw;
     min-width: 20vw; 
+    height: fit-content;
     overflow: hidden;
     border-spacing: 0;
     border-radius: 0.5em;
