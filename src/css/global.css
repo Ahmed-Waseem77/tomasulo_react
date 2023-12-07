@@ -1,8 +1,36 @@
 
 :root { 
-   --dark-0:  #152127;
-   --dark-1:  #263238; 
-   --dark-2:  #374349; 
-   --dark-3:  #455a64;
-   --light-1: #eceff1;
+   --dark-0:       #152127;
+   --dark-1:       #263238; 
+   --dark-2:       #374349; 
+   --dark-3:       #455a64;   
+   --dark-4:       #677c86;
+   --dark-5:       #788d97;
+   --dark-6:       #8a9ba8; 
+   --dark-7:      #9cb0bc;
+   --light-1:      #eceff1; 
+   --accent-red:   #f07178; 
+   --accent-purple:#C792EA;
+   --accent-blue:  #89DDFF; 
+   --accent-orange:#FFCB6B;
+   --accent-orange-0: #dda949;
+
+} 
+
+.generic-button {  
+   all: unset;
+   color: var(--light-1); 
+   background-color: var(--dark-3);
+   font-family: 'Courier New', Courier, monospace; 
+   font-weight: bold;
+   padding: 0.25em 0.5em 0.25em 0.5em; 
+   border-radius: 0.25em; 
+   margin: 0.25em; 
+   cursor: pointer; 
+   transition: 0.2s;
+}
+
+.generic-button:hover { 
+   background-color: var(--accent-orange); 
+   color: var(--dark-1);
 }

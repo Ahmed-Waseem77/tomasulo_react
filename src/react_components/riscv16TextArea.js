@@ -8,11 +8,11 @@ import "codemirror/mode/javascript/javascript";
 CodeMirrorLib.defineMode("riscv16", function() {
     return {
         token: function(stream) {
-            if (stream.match(/R0|R1|R2|R3|R4|R5|R6|R7|r0|r1|r2|r3|r4|r5|r6|r7/)) {
+            if (stream.match(/r[0-7]/i)) {
                 return "tag";
             }
 
-            if (stream.match(/add|ADD|nand|NAND|bne|BNE|addi|ADDI|ret|RET|call|CALL|sub|SUB|div|DIV|load|LOAD|store|STORE/)) {
+            if (stream.match(/(add|nand|bne|addi|ret|call|sub|div|load|store)/i)) {
                 return "keyword"; 
             }
 
@@ -28,7 +28,15 @@ class Riscv16TextArea extends React.Component {
         if (editor) {
             editor.setSize(null, '100%');
         }
+    } 
+
+    getEditorText = () => {
+        if (!this.editorRef) {
+            return "";
+        }
+        return this.editorRef.editor.getValue();
     }
+
 
     render() {
         return (
@@ -42,7 +50,8 @@ class Riscv16TextArea extends React.Component {
                 }} 
             />  
         );
-    }
+    };
+
 }
 
 export {Riscv16TextArea};

@@ -1,0 +1,53 @@
+
+.generic-table {
+    max-width: 80vw;
+    min-width: 20vw; 
+    overflow: hidden;
+    border-spacing: 0;
+    border-radius: 0.5em;
+}
+
+.generic-table th,
+.generic-table td {
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+}
+
+.generic-table th {
+    color: var(--dark-1);
+    padding: 0.25em 0.75em 0.25em 0.75em;
+    background-color: var(--accent-orange);
+}
+
+.generic-table td {
+    padding: 1em;
+}
+
+.generic-table tr { 
+    transition: 0.2s;
+    color: var(--dark-6); 
+    background-color: var(--dark-2);
+} 
+
+.generic-table tr:nth-child(even) {
+    color: var(--dark-7);
+    background-color: var(--dark-3);
+}
+
+.generic-table tr:hover {
+    background-color: var(--accent-orange-0);
+    border-radius: 0.5em;
+    padding: 2em;
+    color: var(--dark-2);
+} 
+
+
+.generic-table td:first-child {
+    background-color: var(--dark-1); 
+    color: var(--dark-5); 
+}
+
+
