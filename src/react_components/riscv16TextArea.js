@@ -12,7 +12,7 @@ CodeMirrorLib.defineMode("riscv16", function() {
                 return "tag";
             }
 
-            if (stream.match(/(add|nand|bne|addi|ret|call|sub|div|load|store)/i)) {
+            if (stream.match(/addi|nand|bne|add|ret|call|sub|div|load|store/i)) {
                 return "keyword"; 
             }
 
