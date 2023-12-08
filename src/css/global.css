@@ -33,4 +33,23 @@
 .generic-button:hover { 
    background-color: var(--accent-orange); 
    color: var(--dark-1);
+} 
+
+
+
+body::-webkit-scrollbar {
+  width: 10px; 
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--dark-0); 
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--dark-1); 
+  border-radius: 1em;
+}
+
+body::-webkit-scrollbar-corner {
+   background: var(--dark-0); 
 }

@@ -6,6 +6,7 @@
     overflow: hidden;
     border-spacing: 0;
     border-radius: 0.5em;
+    margin: 0 1em 1em 1em;
 }
 
 .generic-table th,
@@ -39,7 +40,7 @@
 }
 
 .generic-table tr:hover {
-    background-color: var(--accent-orange-0);
+    background-color: var(--accent-blue);
     border-radius: 0.5em;
     padding: 2em;
     color: var(--dark-2);

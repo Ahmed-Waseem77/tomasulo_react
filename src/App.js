@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css'; 
 import {Riscv16TextArea} from './react_components/riscv16TextArea.js';
 import GenericTable from './react_components/genericTable.js';
-
+import GenericIOTable from './react_components/genericIOTable.js';
 
 var textAreaRef = "";
 
@@ -38,11 +38,28 @@ function App() {
             <Riscv16TextArea ref={textAreaRef}/>
             <button className="generic-button" onClick={handleButtonClick}>BEGIN</button>
           </div>
+          <div className='tables-container'>
           <GenericTable columns={["INSTRUCTION", "ISSUE", "EXECUTE BEGIN", "EXECUTE END", "WRITE RESULT"]}
                         data={[["ADD",0,0,0,0],["ADD",0,0,0,0],["ADD",0,0,0,0]]}
                         numRows={5}
                         numCols={5}
                         />
+          <GenericTable columns={["RESERVATION STATION", "BUSY", "OP", "Vj", "Vk", "Qj", "Qk"]}
+                        data={[["MUL",0,0,0,0,0,0],["ADD2",0,0,0,0,0,0],["ADD3",0,0,0,0,0,0]]}
+                        numRows={5}
+                        numCols={7}
+                        />
+          <GenericTable columns={["REGISTER", "VALUE", "BUSY", "STATION"]}
+                        data={[["R0",0,0,0],["R1",0,0,0],["R2",0,0,0],["R3",0,0,0],["R4",0,0,0],["R5",0,0,0],["R6",0,0,0],["R7",0,0,0]]}
+                        numRows={8}
+                        numCols={4}
+                        />
+          <GenericIOTable titleHeadings={["INPUT", "OUTPUT"]}
+                          numRows={5}
+                          numCols={2}
+                          disableEditing={false}
+                          />
+          </div>
         </div>
       </div>
   );
