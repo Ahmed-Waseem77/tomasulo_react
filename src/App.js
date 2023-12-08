@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css'; 
 import {Riscv16TextArea} from './react_components/riscv16TextArea.js';
 import GenericTable from './react_components/genericTable.js';
-import GenericIOTable from './react_components/genericIOTable.js';
+//import GenericIOTable from './react_components/genericIOTable.js';
 
 var textAreaRef = "";
 
@@ -54,11 +54,6 @@ function App() {
                         numRows={8}
                         numCols={4}
                         />
-          <GenericIOTable titleHeadings={["INPUT", "OUTPUT"]}
-                          numRows={5}
-                          numCols={2}
-                          disableEditing={false}
-                          />
           </div>
         </div>
       </div>
