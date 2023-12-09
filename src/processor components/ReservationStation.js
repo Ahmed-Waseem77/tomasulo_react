@@ -7,12 +7,15 @@ class ReservationStation {
         this.result = null;
         this.resultRegister = resultRegister;
         this.executed = false;
+        this.executionStartCycle = null;
+        this.executionFinishCycle = null;
     }
 
     issueInstruction() {
         if (!this.functionalUnit.busy) {
             this.functionalUnit.issue(this.op1, this.op2);
             this.executed = false;
+            this.executionStartCycle = this.functionalUnit.executionStartCycle;
         }
     }
 
@@ -31,6 +34,7 @@ class ReservationStation {
                 this.functionalUnit.execute(this.operationType);
                 this.result = this.functionalUnit.result;
                 this.executed = true;
+                this.executionFinishCycle = this.functionalUnit.executionFinishCycle;
             }
         }
     }
@@ -41,4 +45,3 @@ class ReservationStation {
         }
     }
 }
-

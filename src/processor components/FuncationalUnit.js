@@ -1,11 +1,14 @@
 class FunctionalUnit {
-    constructor(cyclesNeeded) {
+    constructor(cyclesNeeded, reservationStations) {
         this.busy = false;
         this.cyclesNeeded = cyclesNeeded;
         this.currentCycle = 0;
         this.result = null;
         this.op1 = null;
         this.op2 = null;
+        this.reservationStations = reservationStations;
+        this.executionStartCycle = null;
+        this.executionFinishCycle = null;
     }
 
     execute(operationType) {
@@ -17,14 +20,14 @@ class FunctionalUnit {
                 case "LOAD":
                 case "STORE":
                     if (this.currentCycle === 3) {
-                        // Compute address and read/write from memory
+                        // Compute address and read/write from/to memory (simplified for simulation)
                         this.result = this.op1 + this.op2;
                     }
                     break;
                 case "BNE":
                 case "CALL/RET":
                     if (this.currentCycle === 2) {
-                        // Compute target or return address
+                        // Compute target or return address (simplified for simulation)
                         this.result = this.op1 + this.op2;
                     }
                     break;
@@ -59,6 +62,7 @@ class FunctionalUnit {
             if (this.currentCycle === this.cyclesNeeded) {
                 this.busy = false;
                 this.currentCycle = 0;
+                this.executionFinishCycle = this.currentCycle;
                 return true; // Execution completed
             }
         }
@@ -69,6 +73,16 @@ class FunctionalUnit {
         this.op1 = op1;
         this.op2 = op2;
         this.busy = true;
+        this.executionStartCycle = this.currentCycle;
+    }
+
+    reset() {
+        this.busy = false;
+        this.currentCycle = 0;
+        this.result = null;
+        this.op1 = null;
+        this.op2 = null;
+        this.executionStartCycle = null;
+        this.executionFinishCycle = null;
     }
 }
-
