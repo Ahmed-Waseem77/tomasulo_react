@@ -8,8 +8,14 @@ class AddressRegisters {
         return this.values[registerIndex];
     }
 
+    is_busy(registerIndex) {
+        // Check if the specified address register is busy
+        
+        return false;
+    }
+
     write(registerIndex, value) {
         // Write a value to the specified address register
         this.values[registerIndex] = value;
     }
-}
+}export { AddressRegisters }

@@ -1,3 +1,6 @@
+import { ReservationStation } from "./ReservationStation.js";   // Import the ReservationStation class
+import { FunctionalUnit } from "./FunctionalUnit.js";           // Import the FunctionalUnit class
+
 function initializeReservationStations() {
     const reservationStations = [];
 

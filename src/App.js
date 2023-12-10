@@ -3,10 +3,22 @@ import logo from './logo.svg';
 import './App.css'; 
 import {Riscv16TextArea} from './react_components/riscv16TextArea.js';
 import GenericTable from './react_components/genericTable.js';
+import {Instruction} from './processor components/Instruction.js';
+import {TomasuloSimulator} from './TomasuloSimulator.js';
 //import GenericIOTable from './react_components/genericIOTable.js';
 
 var textAreaRef = "";
-
+// Example usage
+const tomasuloSimulator = new TomasuloSimulator(128 * 1024, 8, 100);
+tomasuloSimulator.initializeReservationStations();
+const programInstructions = [
+    new Instruction("ADD", 1, 2, 3),
+    new Instruction("LOAD", 4, 5, 6),
+    // Add more instructions as needed
+];
+tomasuloSimulator.loadProgram(programInstructions);
+tomasuloSimulator.simulate();
+tomasuloSimulator.displayResults();
 function App() {
 
   textAreaRef = useRef();

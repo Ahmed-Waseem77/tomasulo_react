@@ -44,4 +44,4 @@ class ReservationStation {
             registers.write(this.resultRegister, this.result);
         }
     }
-}
+}export { ReservationStation }

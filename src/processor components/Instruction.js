@@ -5,4 +5,4 @@ class Instruction {
         this.operand2 = operand2;
         this.operand3 = operand3;
     }
-}
+}export { Instruction }

@@ -13,4 +13,4 @@ class Memory {
         // Perform write operation to memory
         this.data[address] = value;
     }
-}
+}export { Memory }

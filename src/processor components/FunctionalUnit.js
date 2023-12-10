@@ -85,4 +85,4 @@ class FunctionalUnit {
         this.executionStartCycle = null;
         this.executionFinishCycle = null;
     }
-}
+}export { FunctionalUnit }
