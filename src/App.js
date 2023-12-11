@@ -11,10 +11,80 @@ var textAreaRef = "";
 const tomasuloSimulator = new TomasuloSimulator(128 * 1024, 8, 100);
 tomasuloSimulator.initializeReservationStations();
 
+function parseInstructions(riscvCode) {
+  var operand1 = null;
+  var operand2 = null;
+  var imm = null;
+  var rsreg = null;
+  // Your logic to parse RISC-V16 code and return an array of Instruction objects
+  // Example logic (use your actual parsing logic):
+  const instructions = riscvCode.split('\n').map((line) => {
+    var [operationType, val1, val2, val3] = line.split(' ');
+
+    //make operationType uppercase
+    operationType = operationType.toUpperCase();
+    
+    if(operationType === "LOAD"){
+      //load rdreg imm operand1
+       rsreg = val1;
+       imm = val2;
+       operand1 = val3;
+       operand2 = null;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+    if(operationType === "STORE"){
+      //store 
+       operand1 = val3;
+       operand2 = val1;
+       imm = val2;
+       rsreg = null;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+    if(operationType === "BNE"){
+      //bne
+       operand1 = val1;
+       operand2 = val2;
+       imm = val3;
+       rsreg = null;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+    if(operationType === "CALL"){
+      //call
+       operand1 = null;
+       operand2 = null;
+       imm = val1;
+       rsreg = null;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+    if(operationType === "RET"){
+      //ret
+      const operand1 = null;
+      const operand2 = null;
+      const imm = null;
+      const rsreg = val1;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+    if(operationType === "ADD" || operationType === "ADDI" || operationType === "NAND" || operationType === "DIV"){
+      //add addi nand div
+      const operand1 = val3;
+      const operand2 = val2;
+      const imm = null;
+      const rsreg = val1;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+
+    return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+  });
+  
+  return instructions;
+} 
+
+
 function App() {
   const [memoryValue1, setMemoryValue1] = useState("");
   const [memoryValue2, setMemoryValue2] = useState("");
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false); 
+  const [memoryData, setMemoryData] = useState([]);
 
   textAreaRef = useRef();
   const [reservationStations, setReservationStations] = useState([]);
@@ -34,72 +104,19 @@ function App() {
     console.log("instruction list", instructions);
   }
 
-  function parseInstructions(riscvCode) {
-    var operand1 = null;
-    var operand2 = null;
-    var imm = null;
-    var rsreg = null;
-    // Your logic to parse RISC-V16 code and return an array of Instruction objects
-    // Example logic (use your actual parsing logic):
-    const instructions = riscvCode.split('\n').map((line) => {
-      var [operationType, val1, val2, val3] = line.split(' ');
+  const handleInputMemoryButtonClick = () => {
+    const address = parseInt(memoryValue1);
+    const data = parseInt(memoryValue2);
+    tomasuloSimulator.memory.write(address, data);
+    console.log(`Memory write: Address=${address}, Data=${data}`); 
 
-      //make operationType uppercase
-      operationType = operationType.toUpperCase();
-      
-      if(operationType === "LOAD"){
-        //load rdreg imm operand1
-         rsreg = val1;
-         imm = val2;
-         operand1 = val3;
-         operand2 = null;
-        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-      }
-      if(operationType === "STORE"){
-        //store 
-         operand1 = val3;
-         operand2 = val1;
-         imm = val2;
-         rsreg = null;
-        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-      }
-      if(operationType === "BNE"){
-        //bne
-         operand1 = val1;
-         operand2 = val2;
-         imm = val3;
-         rsreg = null;
-        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-      }
-      if(operationType === "CALL"){
-        //call
-         operand1 = null;
-         operand2 = null;
-         imm = val1;
-         rsreg = null;
-        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-      }
-      if(operationType === "RET"){
-        //ret
-        const operand1 = null;
-        const operand2 = null;
-        const imm = null;
-        const rsreg = val1;
-        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-      }
-      if(operationType === "ADD" || operationType === "ADDI" || operationType === "NAND" || operationType === "DIV"){
-        //add addi nand div
-        const operand1 = val3;
-        const operand2 = val2;
-        const imm = null;
-        const rsreg = val1;
-        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-      }
+  const newMemoryData = tomasuloSimulator.memory.getMemoryPadded().map((memory, index) => ({
+    "MEMORY ADDRESS": memory[0],      // MEMORY ADDRESS
+    VALUE: memory[1]                 // VALUE
+  })); 
 
-      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
-    });
-  
-    return instructions;
+  setMemoryData(newMemoryData);
+
   }
 
   React.useEffect(() => {
@@ -117,14 +134,21 @@ function App() {
       Vk: station.Vk,
       Qj: station.Qj,
       Qk: station.Qk,
-      A: station.A,
+      A:  station.A,
     })));
   };
+
+  // const memoryData = tomasuloSimulator.memory.getMemory().map((memory, index) => ({
+  //   "MEMORY ADDRESS": index,      // MEMORY ADDRESS
+  //   VALUE: memory      // VALUE
+  // }));
+
+  
   
   const registersData = tomasuloSimulator.registers.getRegisters().map((register, index) => ({
-    REGISTER : `R${index}`,  // REGISTER
-    VALUE: register.value,  // VALUE
-    BUSY: register.busy,   // BUSY
+    REGISTER : `R${index}`,      // REGISTER
+    VALUE: register.value,      // VALUE
+    BUSY: register.busy,       // BUSY
     STATION: register.Qi      // STATION
 }));
   const instructionData = tomasuloSimulator.instructionQueue.getInstructions().map((instruction, index) => ({
@@ -180,10 +204,12 @@ function App() {
           <div className="io-area">
             ADDRESS: <input type="text" value={memoryValue1} disabled={isDisabled} onChange={(e) => setMemoryValue1(e.target.value)} />
             VALUE: <input type="text" value={memoryValue2} disabled={isDisabled} onChange={(e) => setMemoryValue2(e.target.value)} />
-            <button className="generic-button">INSERT</button>
+            <button className="generic-button" onClick={handleInputMemoryButtonClick}>INSERT</button>
           </div>
+
+          {/* Memory table*/}
           <GenericTable columns={["MEMORY ADDRESS", "VALUE"]} 
-                        data={[["0x0000",0],["0x0001",0],["0x0002",0],["0x0003",0],["0x0004",0],["0x0005",0],["0x0006",0],["0x0007",0]]} 
+                        data={memoryData} 
                         numRows={8} 
                         numCols={2} 
           />
