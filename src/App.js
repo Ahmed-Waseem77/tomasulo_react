@@ -110,7 +110,8 @@ function App() {
     var reservationStationsData = tomasuloSimulator.step();
     setReservationStations(reservationStationsData.map((station) => ({
       reservationStations: station.unitName,
-      Busy: station.Busy,
+      //make the value of busy string yes or no base on the boolean value
+      Busy: station.Busy ? "Yes" : "No",
       Op: station.Op,
       Vj: station.Vj,
       Vk: station.Vk,
@@ -125,6 +126,13 @@ function App() {
     VALUE: register.value,  // VALUE
     BUSY: register.busy,   // BUSY
     STATION: register.Qi      // STATION
+}));
+  const instructionData = tomasuloSimulator.instructionQueue.getInstructions().map((instruction, index) => ({
+    INSTRUCTION : instruction.operationType + instruction.operand1 + instruction.operand2,  // INSTRUCTION
+    ISSUE: instruction.issueCycle,  // ISSUE
+    EXECUTE_BEGIN: instruction.executionStartCycle,   // EXECUTE BEGIN
+    EXECUTE_END: instruction.executionFinishCycle,      // EXECUTE END
+    WRITE_RESULT: instruction.writeResultCycle      // WRITE RESULT
 }));
   
   React.useEffect(() => {
@@ -150,9 +158,9 @@ function App() {
           <button className="generic-button" onClick={handleStepButtonClick}>STEP</button>
         </div>
         <div className='tables-container'>
-          <GenericTable columns={["INSTRUCTION", "ISSUE", "EXECUTE BEGIN", "EXECUTE END", "WRITE RESULT"]}
-            data={[["ADD", 0, 0, 0, 0], ["ADD", 0, 0, 0, 0], ["ADD", 0, 0, 0, 0]]}
-            numRows={5}
+          <GenericTable columns={["INSTRUCTION", "ISSUE", "EXECUTE_BEGIN", "EXECUTE_END", "WRITE_RESULT"]}
+            data={instructionData}
+            numRows={instructionData.length}
             numCols={5}
           />
           <GenericTable columns={["reservationStations", "Busy", "Op", "Vj", "Vk", "Qj", "Qk", "A"]}

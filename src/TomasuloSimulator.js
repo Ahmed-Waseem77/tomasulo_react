@@ -42,6 +42,10 @@ class TomasuloSimulator {
         for(let i = 0; i < 10; i++){
             this.registers.write(i, i);
         }
+        //intialize memory values only first 20
+        for(let i = 0; i < 20; i++){
+            this.memory.write(i, i);
+        }
     }
 
     loadProgram(instructions) {
@@ -55,21 +59,33 @@ class TomasuloSimulator {
     step() {
         this.currentCycle++;
         console.log("current cycle", this.currentCycle);
+        for (let i = 0; i < this.reservationStations.length; i++) {
+            console.log("reservation station ", i, " is busy ", this.reservationStations[i].isBusy());
+            if(this.reservationStations[i].isBusy()){
+            console.log("current cycle", this.currentCycle, " start cycle ", this.reservationStations[i].startCycle, " pc ", this.instructionQueue.retCurrentIndex(), "memory ", this.memory);
+            const PC1 = this.PC;
+
+            this.PC =  this.reservationStations[i].updateReservationStation(this.currentCycle, this.registers, this.PC, this.memory);
+            console.log("PC after update", this.PC);
+            }
+        }
         for(let i = 0; i < this.reservationStations.length; i++){
             
-            if(this.instructionQueue.peek() === undefined){
-                this.reservationStations[i].updateReservationStation(this.currentCycle, this.registers, this.instructionQueue.retCurrentIndex(), this.memory);
-                break;
-            }else
-            if(!this.reservationStations[i].isBusy()&& this.reservationStations[i].checkUnit(this.instructionQueue.peek())){
-                this.reservationStations[i].setBusy(true);
-                this.reservationStations[i].startCycle = this.currentCycle;
-                console.log("Before issueInstruction: ", this.instructionQueue.peek().operationType, "_", this.instructionQueue.peek().operand1, " ", this.instructionQueue.peek().operand2, " ", this.instructionQueue.peek().operand3, " ", this.instructionQueue.peek().PC);
-                this.reservationStations[i].issueInstruction(this.instructionQueue.dequeue(), this.currentCycle, this.registers, this.instructionQueue.retCurrentIndex());
+            console.log("isntruction queue", this.instructionQueue.jumpToIndex(this.PC));
+            if(this.instructionQueue.jumpToIndex(this.PC) !== undefined){
+                if( !this.reservationStations[i].isBusy()&& this.reservationStations[i].checkUnit(this.instructionQueue.jumpToIndex(this.PC))){
+                    this.reservationStations[i].setBusy(true);
+                    this.reservationStations[i].startCycle = this.currentCycle;
+                    console.log("instruction",this.instructionQueue.jumpToIndex(this.PC), "pc", this.PC);
+                    this.reservationStations[i].issueInstruction(this.instructionQueue.jumpToIndex(this.PC), this.currentCycle, this.registers, this.PC);
+                    this.PC++;
+                    break;
+                    
+                }
             }
-            this.reservationStations[i].updateReservationStation(this.currentCycle, this.registers, this.instructionQueue.retCurrentIndex(), this.memory);
-
+            
         }
+
         this.displayResults();
         const updatedReservationStations = this.reservationStations.map(station => {
             // Your logic to update reservation stations...

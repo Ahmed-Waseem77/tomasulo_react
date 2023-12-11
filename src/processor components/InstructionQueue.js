@@ -9,6 +9,10 @@ class InstructionQueue {
         this.instructions.push(instruction);
     }
 
+    getInstructions() {
+        // Get all instructions in the queue
+        return this.instructions;
+    }
     dequeue() {
         // Remove and return the next instruction from the front of the queue
         const nextInstruction = this.instructions[this.currentIndex];
@@ -19,6 +23,7 @@ class InstructionQueue {
     jumpToIndex(index) {
         // Jump to a specific instruction index
         this.currentIndex = index;
+        return this.instructions[this.currentIndex];
     }
 
     isEmpty() {

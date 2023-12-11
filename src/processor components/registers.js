@@ -17,11 +17,7 @@ class Registers {
     }
 
     getQi(registerIndex) {
-        if (this.registers[registerIndex].busy) {
-            return null;
-        }else{
         return this.registers[registerIndex].Qi;
-        }
     }
 
     write(registerIndex, data, busy = false, Qi = null) {
