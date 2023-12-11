@@ -87,11 +87,19 @@ function App() {
         const rsreg = val1;
         return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
       }
-      if(operationType === "ADD" || operationType === "ADDI" || operationType === "NAND" || operationType === "DIV"){
+      if(operationType === "ADD" ||  operationType === "NAND" || operationType === "DIV"){
         //add addi nand div
         const operand1 = val3;
         const operand2 = val2;
         const imm = null;
+        const rsreg = val1;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+      if(operationType === "ADDI"){
+        //add addi nand div
+        const operand1 = val2;
+        const operand2 = null;
+        const imm = val3;
         const rsreg = val1;
         return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
       }

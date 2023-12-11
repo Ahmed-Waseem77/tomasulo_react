@@ -97,7 +97,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
     if(instruction.operationType === "RET"){
         this.A = registers.read(1);
     }
-    if(instruction.operationType === "ADD" || instruction.operationType === "ADDI" || instruction.operationType === "NAND" || instruction.operationType === "DIV"){
+    if(instruction.operationType === "ADD" || instruction.operationType === "NAND" || instruction.operationType === "DIV"){
         this.Vj = registers.read(instruction.operand1);
         this.Qj = registers.getQi(instruction.operand1);
         this.Vk = registers.read(instruction.operand2);
@@ -105,6 +105,13 @@ issueInstruction(instruction, currentCycle, registers, PC){
         console.log("loooook",instruction);
         registers.setBusy_Qi(instruction.rsreg, true, this.unitName);
         return this.instruction;
+    }
+    if(instruction.operationType === "ADDI"){
+    this.Vj = registers.read(instruction.operand1);
+    this.Qj = registers.getQi(instruction.operand1);
+    this.Vk = instruction.imm;
+    registers.setBusy_Qi(instruction.rsreg, true, this.unitName);
+    return this.instruction;
     }
     return this.instruction;
 }
@@ -119,15 +126,31 @@ issueInstruction(instruction, currentCycle, registers, PC){
                 this.Vk = registers.read(this.instruction.operand2);
                 this.Qk = registers.getQi(this.instruction.operand2);
             }
-            if(this.Qj !== null || this.Qk !== null || (registers.isBusy(this.instruction.operand1) 
-            && this.unitName !== registers.getQi(this.instruction.operand1)) || (registers.isBusy(this.instruction.operand2))  
-            && this.unitName !== registers.getQi(this.instruction.operand2)){
-                if(!this.startedExcution){
+            console.log("beforeeeee operand1", this.instruction.operand1, "operand2", this.instruction.operand2);
+            if (this.Qj !== null || this.Qk !== null) {
+                if (!this.startedExcution) {
                     console.log("not ready we failed", this.Qj, this.Qk, registers.getQi(this.instruction.operand1), registers.getQi(this.instruction.operand2), this.unitName);
                     this.startCycle = currentCycle;
                     return PC;
                 }
+            } else if (!isNaN(this.instruction.operand1) ) {
+                console.log("operand1", this.instruction.operand1, "operand2", this.instruction.operand2);
+                if (registers.isBusy(this.instruction.operand1) && this.unitName !== registers.getQi(this.instruction.operand1)) {
+                    if (!this.startedExcution) {
+                        this.startCycle = currentCycle;
+                        return PC;
+                    }
+                }
+            } else if (!isNaN(this.instruction.operand2)) {
+                if (registers.isBusy(this.instruction.operand2) && this.unitName !== registers.getQi(this.instruction.operand2)) {
+                    if (!this.startedExcution) {
+                        this.startCycle = currentCycle;
+                        return PC;
+                    }
+                }
             }
+            
+        
             if(currentCycle === this.startCycle + 1){
             this.startedExcution = true;
             this.instruction.setExecutionStartCycle(currentCycle);
@@ -166,7 +189,8 @@ issueInstruction(instruction, currentCycle, registers, PC){
     }
     if(this.remainingCycles === 1 && this.instruction.operationType === "CALL"){
         registers.write(1, PC + 1 , false, null);
-        PC = this.A;
+        PC = PC + this.A;
+        console.log("PC after call", PC);
         this.clearReservationStation(PC);
     }
     if(this.remainingCycles === 1 && this.instruction.operationType === "RET"){
@@ -179,6 +203,22 @@ issueInstruction(instruction, currentCycle, registers, PC){
     }else if(this.remainingCycles === 3 && (this.instruction.operationType === "ADD" || this.instruction.operationType === "ADDI")){
         this.instruction.setWriteResultCycle(currentCycle);
         registers.write(this.instruction.rsreg, this.Vj + this.Vk, false, null);
+        this.clearReservationStation(PC);
+    }
+    if(this.remainingCycles === 1 && this.instruction.operationType === "NAND"){
+        this.instruction.setExecutionFinishCycle(currentCycle);
+    }else if(this.remainingCycles === 2 && this.instruction.operationType === "NAND"){
+        this.instruction.setWriteResultCycle(currentCycle);
+
+        registers.write(this.instruction.rsreg, ((~(this.Vj & this.Vk)) >>> 0) & 0xFFFF, false, null);
+        this.clearReservationStation(PC);
+    }
+    if(this.remainingCycles === 10 && this.instruction.operationType === "DIV"){
+        this.instruction.setExecutionFinishCycle(currentCycle);
+    }
+    if(this.remainingCycles === 11 && this.instruction.operationType === "DIV"){
+        this.instruction.setWriteResultCycle(currentCycle);
+        registers.write(this.instruction.rsreg, this.Vj / this.Vk, false, null);
         this.clearReservationStation(PC);
     }
     return PC;

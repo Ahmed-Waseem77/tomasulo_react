@@ -27,7 +27,7 @@ class Registers {
     }
 
     isBusy(registerIndex) {
-        console.log("register_indx",registerIndex);
+        
         return this.registers[registerIndex].busy;
     }
 
