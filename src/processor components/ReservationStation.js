@@ -1,47 +1,183 @@
+import { Register } from "./registers.js";
+import { Memory } from "./Memory.js";
+import { Instruction } from "./Instruction.js";
 class ReservationStation {
-    constructor(operationType, op1, op2, functionalUnit, resultRegister) {
-        this.operationType = operationType;
-        this.op1 = op1;
-        this.op2 = op2;
-        this.functionalUnit = functionalUnit;
-        this.result = null;
-        this.resultRegister = resultRegister;
-        this.executed = false;
-        this.executionStartCycle = null;
-        this.executionFinishCycle = null;
-    }
-
-    issueInstruction() {
-        if (!this.functionalUnit.busy) {
-            this.functionalUnit.issue(this.op1, this.op2);
-            this.executed = false;
-            this.executionStartCycle = this.functionalUnit.executionStartCycle;
+constructor(unitName){
+    this.Busy = false;
+    this.Op = null;
+    this.Vj = null;
+    this.Vk = null;
+    this.Qj = null;
+    this.Qk = null;
+    this.A = null;
+    this.currentCycle = 0;
+    this.startCycle = null;
+    this.remainingCycles = null;
+    this.instruction = new Instruction("", 0, 0, 0, 0);
+    this.unitName = unitName;
+}
+setBusy(isBusy){
+    this.Busy = isBusy;
+}
+isBusy(){
+    return this.Busy;
+}
+checkUnit(instruction){
+    //check if operationType is supported by this unit by checking the unitName
+    if(instruction.operationType ==="LOAD"){
+        if(this.unitName === "LOAD1" || this.unitName === "LOAD2"){
+            return true;
         }
     }
-
-    executeInstruction(registers) {
-        if (!this.executed) {
-            // Check if operands are available
-            if (this.op1 && !registers.isBusy(this.op1)) {
-                this.op1 = registers.read(this.op1);
-            }
-            if (this.op2 && !registers.isBusy(this.op2)) {
-                this.op2 = registers.read(this.op2);
-            }
-
-            if (!this.op1 && !this.op2) {
-                // Operands are ready, execute
-                this.functionalUnit.execute(this.operationType);
-                this.result = this.functionalUnit.result;
-                this.executed = true;
-                this.executionFinishCycle = this.functionalUnit.executionFinishCycle;
-            }
+    if(instruction.operationType ==="STORE"){
+        if(this.unitName === "STORE1" || this.unitName === "STORE2"){
+            return true;
         }
     }
-
-    writeResult(registers) {
-        if (this.executed && !this.functionalUnit.busy) {
-            registers.write(this.resultRegister, this.result);
+    if(instruction.operationType ==="BNE"){
+        if(this.unitName === "BNE1"){
+            return true;
         }
     }
-}export { ReservationStation }
+    if(instruction.operationType ==="CALL" || instruction.operationType ==="RET"){
+        if(this.unitName === "CALL/RET1"){
+            return true;
+        }
+    }
+    if(instruction.operationType ==="ADD" || instruction.operationType ==="ADDI"){
+        if(this.unitName === "ADD/ADDI1" || this.unitName === "ADD/ADDI2" || this.unitName === "ADD/ADDI3"){
+            return true;
+        }
+    }
+    if(instruction.operationType ==="NAND"){
+        if(this.unitName === "NAND1"){
+            return true;
+        }
+    }
+    if(instruction.operationType ==="DIV"){
+        if(this.unitName === "DIV1"){
+            return true;
+        }
+    }
+    return false;
+}
+issueInstruction(instruction, currentCycle, registers, PC){
+    
+    this.instruction = instruction;
+    this.Busy = true;
+    //remove spaces from operationType
+    this.Op = instruction.operationType;
+    this.startCycle = currentCycle;
+    console.log("issue instruction ", this.Op);
+    this.instruction.setIssueCycle(currentCycle);
+    this.instruction.setExecutionStartCycle(currentCycle + 1);
+    if(instruction.operationType === "LOAD" || instruction.operationType === "STORE"){
+        this.Vj = registers.read(instruction.operand1);
+        this.Qj = registers.getQi(instruction.operand1);
+        this.A = instruction.imm;
+        registers.setBusy_Qi(instruction.rsreg, true, this.unitName);
+        if(instruction.operationType === "STORE"){
+            this.Vk = registers.read(instruction.operand2);
+            this.Qk = registers.getQi(instruction.operand2);
+        }
+    }
+    if(instruction.operationType === "BNE"){
+        this.Vj = registers.read(instruction.operand1);
+        this.Qj = registers.getQi(instruction.operand1);
+        this.Vk = registers.read(instruction.operand2);
+        this.Qk = registers.getQi(instruction.operand2);
+        this.A = PC + 1 + instruction.imm;
+    }
+    if(instruction.operationType === "CALL"){
+        this.Vj = PC + 1;
+        this.A = instruction.imm;
+        registers.setBusy_Qi(1, true, this.unitName);
+    }
+    if(instruction.operationType === "RET"){
+        this.A = registers.read(1);
+    }
+    if(instruction.operationType === "ADD" || instruction.operationType === "ADDI" || instruction.operationType === "NAND" || instruction.operationType === "DIV"){
+        this.Vj = registers.read(instruction.operand1);
+        this.Qj = registers.getQi(instruction.operand1);
+        this.Vk = registers.read(instruction.operand2);
+        this.Qk = registers.getQi(instruction.operand2);
+        console.log("loooook",instruction);
+        registers.setBusy_Qi(instruction.rsreg, true, this.unitName);
+    }
+    return this.instruction;
+}
+
+updateReservationStation(currentCycle, registers, PC, memory){
+    //check if operands are ready
+        if(this.Qj !== null && !registers.isBusy(this.instruction.operand1)){
+            this.Vj = registers.read(this.instruction.operand1);
+            this.Qj = registers.getQi(this.instruction.operand1);
+        }
+        if(this.Qk !== null && !registers.isBusy(this.instruction.operand2)){
+            this.Vk = registers.read(this.instruction.operand2);
+            this.Qk = registers.getQi(this.instruction.operand2);
+        }
+        if(this.Qj !== null || this.Qk !== null || registers.isBusy(this.instruction.operand1) || registers.isBusy(this.instruction.operand2)){
+            this.startCycle = currentCycle;
+            this.instructions.setExecutionStartCycle(currentCycle + 1);
+            return this.instruction;
+        }
+
+    this.remainingCycles = currentCycle - this.startCycle;
+    console.log("remaining cycles", this.remainingCycles, "op", this.Op, "unit ", this.unitName);
+
+    if(this.remainingCycles === 1 && (this.instruction.operationType === "LOAD" || this.instruction.operationType === "STORE")){
+        this.A = this.Vj + this.A;
+        this.Vj = null;
+
+    }
+    if(this.remainingCycles === 3 && (this.instruction.operationType === "LOAD" || this.instruction.operationType === "STORE")){
+        if(this.instruction.operationType === "LOAD"){ 
+            registers.write(this.instruction.rsreg, this.A, false, null);
+            this.instruction.setExecutionFinishCycle(currentCycle);
+            this.clearReservationStation();
+            
+        }
+        if(this.instruction.operationType === "STORE"){
+            memory.write(this.Vk, this.A);
+            this.clearReservationStation();
+            
+        }
+    }
+    if(this.remainingCycles === 1 && this.instruction.operationType === "BNE"){
+        if(this.Vj !== this.Vk){
+            PC = this.A;
+            this.clearReservationStation();
+        }
+    }
+    if(this.remainingCycles === 1 && this.instruction.operationType === "CALL"){
+        registers.write(1, PC + 1 , false, null);
+        PC = this.A;
+        this.clearReservationStation();
+    }
+    if(this.remainingCycles === 1 && this.instruction.operationType === "RET"){
+        PC = this.A;
+        this.clearReservationStation();
+    }
+    if(this.remainingCycles === 2 && (this.instruction.operationType === "ADD" || this.instruction.operationType === "ADDI")){
+        registers.write(this.instruction.rdreg, this.Vj + this.Vk, false, null);
+        this.clearReservationStation();
+    }
+    return this.instruction;
+}
+
+clearReservationStation(){
+    this.Busy = false;
+    this.Op = null;
+    this.Vj = null;
+    this.Vk = null;
+    this.Qj = null;
+    this.Qk = null;
+    this.A = null;
+    this.currentCycle = 0;
+    this.startCycle = null;
+    this.remainingCycles = null;
+    return;
+}
+
+}export { ReservationStation };

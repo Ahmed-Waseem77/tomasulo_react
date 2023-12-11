@@ -3,28 +3,21 @@ import logo from './logo.svg';
 import './App.css';
 import { Riscv16TextArea } from './react_components/riscv16TextArea.js';
 import GenericTable from './react_components/genericTable.js';
-import {Instruction} from './processor components/Instruction.js';
-import {TomasuloSimulator} from './TomasuloSimulator.js';
-//import GenericIOTable from './react_components/genericIOTable.js';
+import { Instruction } from './processor components/Instruction.js';
+import { TomasuloSimulator } from './TomasuloSimulator.js';
 
 var textAreaRef = "";
-// Example usage
+
 const tomasuloSimulator = new TomasuloSimulator(128 * 1024, 8, 100);
 tomasuloSimulator.initializeReservationStations();
-const programInstructions = [
-    new Instruction("ADD", 1, 2, 3),
-    new Instruction("LOAD", 4, 5, 6),
-    // Add more instructions as needed
-];
-tomasuloSimulator.loadProgram(programInstructions);
-tomasuloSimulator.simulate();
-tomasuloSimulator.displayResults();
+
 function App() {
   const [memoryValue1, setMemoryValue1] = useState("");
   const [memoryValue2, setMemoryValue2] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
 
   textAreaRef = useRef();
+  const [reservationStations, setReservationStations] = useState([]);
 
   const handleButtonClick = () => {
     if (textAreaRef.current) {
@@ -33,6 +26,110 @@ function App() {
       setIsDisabled(true);
     }
   };
+
+  const handleInsertClick = () => {
+    console.log("insert clicked", textAreaRef.current.getEditorText());
+    var instructions = parseInstructions(textAreaRef.current.getEditorText());
+    tomasuloSimulator.loadProgram(instructions);
+    console.log("instruction list", instructions);
+  }
+
+  function parseInstructions(riscvCode) {
+    var operand1 = null;
+    var operand2 = null;
+    var imm = null;
+    var rsreg = null;
+    // Your logic to parse RISC-V16 code and return an array of Instruction objects
+    // Example logic (use your actual parsing logic):
+    const instructions = riscvCode.split('\n').map((line) => {
+      var [operationType, val1, val2, val3] = line.split(' ');
+
+      //make operationType uppercase
+      operationType = operationType.toUpperCase();
+      
+      if(operationType === "LOAD"){
+        //load rdreg imm operand1
+         rsreg = val1;
+         imm = val2;
+         operand1 = val3;
+         operand2 = null;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+      if(operationType === "STORE"){
+        //store 
+         operand1 = val3;
+         operand2 = val1;
+         imm = val2;
+         rsreg = null;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+      if(operationType === "BNE"){
+        //bne
+         operand1 = val1;
+         operand2 = val2;
+         imm = val3;
+         rsreg = null;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+      if(operationType === "CALL"){
+        //call
+         operand1 = null;
+         operand2 = null;
+         imm = val1;
+         rsreg = null;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+      if(operationType === "RET"){
+        //ret
+        const operand1 = null;
+        const operand2 = null;
+        const imm = null;
+        const rsreg = val1;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+      if(operationType === "ADD" || operationType === "ADDI" || operationType === "NAND" || operationType === "DIV"){
+        //add addi nand div
+        const operand1 = val3;
+        const operand2 = val2;
+        const imm = null;
+        const rsreg = val1;
+        return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+      }
+
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    });
+  
+    return instructions;
+  }
+
+  React.useEffect(() => {
+    console.log("reservation stations", reservationStations);
+  }, [reservationStations]);
+
+  const handleStepButtonClick = () => {
+    var reservationStationsData = tomasuloSimulator.step();
+    setReservationStations(reservationStationsData.map((station) => ({
+      reservationStations: station.unitName,
+      Busy: station.Busy,
+      Op: station.Op,
+      Vj: station.Vj,
+      Vk: station.Vk,
+      Qj: station.Qj,
+      Qk: station.Qk,
+      A: station.A,
+    })));
+  };
+  
+  const registersData = tomasuloSimulator.registers.getRegisters().map((register, index) => ({
+    REGISTER : `R${index}`,  // REGISTER
+    VALUE: register.value,  // VALUE
+    BUSY: register.busy,   // BUSY
+    STATION: register.Qi      // STATION
+}));
+  
+  React.useEffect(() => {
+    console.log("registersData", registersData);
+  }, [registersData]);
 
   return (
     <div className="App">
@@ -44,17 +141,13 @@ function App() {
         </h6>
       </header>
       <div className="simulator-container">
-        {/* TODO: add the simulator here
-              either Tables, or architecture simulation, to be discussed
-              tables: T1: instruction issue, execute begin, execute end, write result
-                      T2: reservation stations
-              architecture: everything in detail, see https://youtu.be/zS9ngvUQPNM?si=YvRanIv92w-ik4r_
-          */}
         <div className="cm-area">
           <h6>riscv16 code</h6>
           <hr></hr>
           <Riscv16TextArea ref={textAreaRef} />
+          <button className="generic-button" onClick={handleInsertClick}>INSERT INSTRUCTIONS</button>
           <button className="generic-button" onClick={handleButtonClick}>BEGIN</button>
+          <button className="generic-button" onClick={handleStepButtonClick}>STEP</button>
         </div>
         <div className='tables-container'>
           <GenericTable columns={["INSTRUCTION", "ISSUE", "EXECUTE BEGIN", "EXECUTE END", "WRITE RESULT"]}
@@ -62,28 +155,30 @@ function App() {
             numRows={5}
             numCols={5}
           />
-          <GenericTable columns={["RESERVATION STATION", "BUSY", "OP", "Vj", "Vk", "Qj", "Qk"]}
-            data={[["MUL", 0, 0, 0, 0, 0, 0], ["ADD2", 0, 0, 0, 0, 0, 0], ["ADD3", 0, 0, 0, 0, 0, 0]]}
-            numRows={5}
-            numCols={7}
+          <GenericTable columns={["reservationStations", "Busy", "Op", "Vj", "Vk", "Qj", "Qk", "A"]}
+            data={reservationStations}
+            numRows={reservationStations.length}
+            numCols={8}
           />
+          {console.log("registers", tomasuloSimulator.registers.getRegisters())}
           <GenericTable columns={["REGISTER", "VALUE", "BUSY", "STATION"]}
-            data={[["R0", 0, 0, 0], ["R1", 0, 0, 0], ["R2", 0, 0, 0], ["R3", 0, 0, 0], ["R4", 0, 0, 0], ["R5", 0, 0, 0], ["R6", 0, 0, 0], ["R7", 0, 0, 0]]}
-            numRows={8}
+            
+            data={registersData}
+            numRows={registersData.length}
             numCols={4}
           />
         </div>
         <div className="memory-io">
-        <div className="io-area">
-          ADDRESS: <input type="text" value={memoryValue1} disabled={isDisabled} onChange={(e) => setMemoryValue1(e.target.value)} />
-          VALUE: <input type="text" value={memoryValue2} disabled={isDisabled} onChange={(e) => setMemoryValue2(e.target.value)} />
-          <button className="generic-button">INSERT</button>
-        </div>
+          <div className="io-area">
+            ADDRESS: <input type="text" value={memoryValue1} disabled={isDisabled} onChange={(e) => setMemoryValue1(e.target.value)} />
+            VALUE: <input type="text" value={memoryValue2} disabled={isDisabled} onChange={(e) => setMemoryValue2(e.target.value)} />
+            <button className="generic-button">INSERT</button>
+          </div>
           <GenericTable columns={["MEMORY ADDRESS", "VALUE"]} 
                         data={[["0x0000",0],["0x0001",0],["0x0002",0],["0x0003",0],["0x0004",0],["0x0005",0],["0x0006",0],["0x0007",0]]} 
                         numRows={8} 
                         numCols={2} 
-                        />
+          />
         </div>
       </div>
     </div>
@@ -91,4 +186,4 @@ function App() {
 }
 
 export default App;
-export {textAreaRef};
+export { textAreaRef };

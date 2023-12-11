@@ -1,6 +1,7 @@
 class InstructionQueue {
     constructor() {
         this.instructions = [];
+        this.currentIndex = 0; // Keep track of the current index
     }
 
     enqueue(instruction) {
@@ -10,17 +11,24 @@ class InstructionQueue {
 
     dequeue() {
         // Remove and return the next instruction from the front of the queue
-        return this.instructions.shift();
+        const nextInstruction = this.instructions[this.currentIndex];
+        this.currentIndex++;
+        return nextInstruction;
+    }
+
+    jumpToIndex(index) {
+        // Jump to a specific instruction index
+        this.currentIndex = index;
     }
 
     isEmpty() {
         // Check if the queue is empty
-        return this.instructions.length === 0;
+        return this.currentIndex >= this.instructions.length;
     }
 
     peek() {
         // Peek at the next instruction without removing it from the queue
-        return this.instructions[0];
+        return this.instructions[this.currentIndex];
     }
 
     size() {
@@ -31,5 +39,12 @@ class InstructionQueue {
     clear() {
         // Clear all instructions from the queue
         this.instructions = [];
+        this.currentIndex = 0; // Reset the current index
     }
-}export { InstructionQueue }
+
+    retCurrentIndex(){
+        return this.currentIndex;
+    }
+}
+
+export { InstructionQueue };

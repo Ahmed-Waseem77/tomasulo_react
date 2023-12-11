@@ -1,12 +1,12 @@
 class FunctionalUnit {
-    constructor(cyclesNeeded, reservationStations) {
+    constructor(cyclesNeeded) {
         this.busy = false;
         this.cyclesNeeded = cyclesNeeded;
         this.currentCycle = 0;
         this.result = null;
         this.op1 = null;
         this.op2 = null;
-        this.reservationStations = reservationStations;
+        
         this.executionStartCycle = null;
         this.executionFinishCycle = null;
     }
@@ -61,8 +61,8 @@ class FunctionalUnit {
 
             if (this.currentCycle === this.cyclesNeeded) {
                 this.busy = false;
-                this.currentCycle = 0;
                 this.executionFinishCycle = this.currentCycle;
+                this.currentCycle = 0;
                 return true; // Execution completed
             }
         }
@@ -85,4 +85,6 @@ class FunctionalUnit {
         this.executionStartCycle = null;
         this.executionFinishCycle = null;
     }
-}export { FunctionalUnit }
+}
+
+export { FunctionalUnit };
