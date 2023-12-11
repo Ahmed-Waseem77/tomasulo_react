@@ -9,6 +9,7 @@ class Registers {
     }
 
     read(registerIndex) {
+        console.log("register index", registerIndex);
         if (this.registers[registerIndex].busy) {
             return null;
         }else{

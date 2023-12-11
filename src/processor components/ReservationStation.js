@@ -76,7 +76,9 @@ issueInstruction(instruction, currentCycle, registers, PC){
         this.Vj = registers.read(instruction.operand1);
         this.Qj = registers.getQi(instruction.operand1);
         this.A = instruction.imm;
-        registers.setBusy_Qi(instruction.rsreg, true, this.unitName);
+        if(instruction.operationType === "LOAD"){
+            registers.setBusy_Qi(instruction.rsreg, true, this.unitName);
+        }
         if(instruction.operationType === "STORE"){
             this.Vk = registers.read(instruction.operand2);
             this.Qk = registers.getQi(instruction.operand2);
@@ -107,6 +109,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
         return this.instruction;
     }
     if(instruction.operationType === "ADDI"){
+    console.log("addi", instruction.operand1, instruction.imm, instruction.rsreg);
     this.Vj = registers.read(instruction.operand1);
     this.Qj = registers.getQi(instruction.operand1);
     this.Vk = instruction.imm;
@@ -174,7 +177,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
             
         }
         if(this.instruction.operationType === "STORE" ){
-            memory.write(this.Vk, this.A);
+            memory.write( this.A, this.Vk);
             this.clearReservationStation(PC);
             
         }

@@ -64,11 +64,19 @@ function parseInstructions(riscvCode) {
       const rsreg = val1;
       return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
     }
-    if(operationType === "ADD" || operationType === "ADDI" || operationType === "NAND" || operationType === "DIV"){
+    if(operationType === "ADD" ||operationType === "NAND" || operationType === "DIV"){
       //add addi nand div
       const operand1 = val3;
       const operand2 = val2;
       const imm = null;
+      const rsreg = val1;
+      return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
+    }
+    if(operationType === "ADDI"){
+      //add addi nand div
+      const operand1 = val2;
+      const operand2 = null;
+      const imm = val3;
       const rsreg = val1;
       return new Instruction(operationType, parseInt(operand1), parseInt(operand2), parseInt(imm), parseInt(rsreg));
     }
@@ -103,14 +111,13 @@ function App() {
     tomasuloSimulator.loadProgram(instructions);
     console.log("instruction list", instructions);
   }
-
   const handleInputMemoryButtonClick = () => {
     const address = parseInt(memoryValue1);
     const data = parseInt(memoryValue2);
     tomasuloSimulator.memory.write(address, data);
     console.log(`Memory write: Address=${address}, Data=${data}`); 
 
-  const newMemoryData = tomasuloSimulator.memory.getMemoryPadded().map((memory, index) => ({
+   var newMemoryData = tomasuloSimulator.memory.getMemoryPadded().map((memory, index) => ({
     "MEMORY ADDRESS": memory[0],      // MEMORY ADDRESS
     VALUE: memory[1]                 // VALUE
   })); 
@@ -135,6 +142,11 @@ function App() {
       Qj: station.Qj,
       Qk: station.Qk,
       A:  station.A,
+    })));
+    var newMemoryData = tomasuloSimulator.memory.getMemoryPadded();
+    setMemoryData(newMemoryData.map((memory, index) => ({
+      "MEMORY ADDRESS": memory[0],      // MEMORY ADDRESS
+      VALUE: memory[1]                 // VALUE
     })));
   };
 
