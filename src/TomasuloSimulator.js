@@ -15,13 +15,13 @@ class TomasuloSimulator {
         this.addressRegisters = new AddressRegisters(numAddressRegisters);
         this.registers = new Registers(); // Instantiate the correct class
         this.PC = 0;
-        
         // Initialize reservation stations and functional units
         this.initializeReservationStations();
         console.log(this.reservationStations);
         // Simulation parameters
         this.currentCycle = 0;
         this.numCycles = numCycles;
+        this.branchingPC = 0;
     }
 
     initializeReservationStations() {
@@ -64,8 +64,24 @@ class TomasuloSimulator {
             if(this.reservationStations[i].isBusy()){
             console.log("current cycle", this.currentCycle, " start cycle ", this.reservationStations[i].startCycle, " pc ", this.instructionQueue.retCurrentIndex(), "memory ", this.memory);
             const PC1 = this.PC;
+            console.log("tomasolueee branch", this.branching);
+            if(this.reservationStations[i].isbranch()){
+                this.branching = this.reservationStations[i].getBranching();
+            }else{
+                this.reservationStations[i].setBranching(this.branching);
+            }
 
             this.PC =  this.reservationStations[i].updateReservationStation(this.currentCycle, this.registers, this.PC, this.memory);
+            console.log("siiii branch", this.reservationStations[i].isbranch());
+            if(this.reservationStations[i].isbranch()){
+                this.branching = this.reservationStations[i].getBranching();
+
+            }else{
+                this.reservationStations[i].setBranching(this.branching);
+            }
+            if(this.branching){
+                this.PC = this.branchingPC;
+            }
             console.log("PC after update", this.PC);
             }
         }
@@ -78,6 +94,10 @@ class TomasuloSimulator {
                     this.reservationStations[i].startCycle = this.currentCycle;
                     console.log("instruction",this.instructionQueue.jumpToIndex(this.PC), "pc", this.PC);
                     this.reservationStations[i].issueInstruction(this.instructionQueue.jumpToIndex(this.PC), this.currentCycle, this.registers, this.PC);
+                    this.branching = this.reservationStations[i].getBranching();
+                    if(this.branching){
+                        this.branchingPC = this.PC;
+                    }
                     this.PC++;
                     break;
                     

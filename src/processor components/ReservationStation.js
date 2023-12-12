@@ -16,6 +16,7 @@ constructor(unitName){
     this.instruction = new Instruction("", 0, 0, 0, 0);
     this.unitName = unitName;
     this.startedExcution = false;
+    this.branching = false;
 }
 setBusy(isBusy){
     this.Busy = isBusy;
@@ -90,6 +91,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
         this.Vk = registers.read(instruction.operand2);
         this.Qk = registers.getQi(instruction.operand2);
         this.A = PC + 1 + instruction.imm;
+        this.branching = true;
     }
     if(instruction.operationType === "CALL"){
         this.Vj = PC + 1;
@@ -119,7 +121,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
     return this.instruction;
 }
 
-    updateReservationStation(currentCycle, registers, PC, memory){
+ updateReservationStation(currentCycle, registers, PC, memory){
         //check if operands are ready
             if(this.Qj !== null && !registers.isBusy(this.instruction.operand1)){
                 this.Vj = registers.read(this.instruction.operand1);
@@ -129,10 +131,16 @@ issueInstruction(instruction, currentCycle, registers, PC){
                 this.Vk = registers.read(this.instruction.operand2);
                 this.Qk = registers.getQi(this.instruction.operand2);
             }
-            console.log("beforeeeee operand1", this.instruction.operand1, "operand2", this.instruction.operand2);
-            if (this.Qj !== null || this.Qk !== null) {
+            console.log("beforeeeee operand1", this.instruction.operand1, "this branch", this.branching);
+            if (this.branching && this.instruction.operationType !== "BNE"){
                 if (!this.startedExcution) {
-                    console.log("not ready we failed", this.Qj, this.Qk, registers.getQi(this.instruction.operand1), registers.getQi(this.instruction.operand2), this.unitName);
+                    console.log("delayed excutation");
+                    this.startCycle = null;
+                    return PC;
+                }
+
+            }else if (this.Qj !== null || this.Qk !== null) {
+                if (!this.startedExcution) {
                     this.startCycle = currentCycle;
                     return PC;
                 }
@@ -151,7 +159,8 @@ issueInstruction(instruction, currentCycle, registers, PC){
                         return PC;
                     }
                 }
-            }
+            } 
+            
             
         
             if(currentCycle === this.startCycle + 1){
@@ -187,6 +196,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
             PC = this.A - 1;
             console.log("PC after bne", PC);
             this.instruction.setExecutionFinishCycle(currentCycle);
+            this.branching = false;
             this.clearReservationStation(PC);
         }
     }
@@ -226,7 +236,18 @@ issueInstruction(instruction, currentCycle, registers, PC){
     }
     return PC;
 }
-
+setBranching(branching){
+    this.branching = branching;
+}
+getBranching(){
+    return this.branching;
+}
+isbranch(){
+    if(this.instruction.operationType === "BNE"){
+        return true;
+    }
+    return false;
+}
 clearReservationStation(PC){
     this.Busy = false;
     this.Op = null;
@@ -239,6 +260,7 @@ clearReservationStation(PC){
     this.startCycle = null;
     this.remainingCycles = null;
     this.startedExcution = false;
+    this.branching = false;
     return PC;
 }
 
