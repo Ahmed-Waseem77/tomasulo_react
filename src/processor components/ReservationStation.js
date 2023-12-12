@@ -196,17 +196,24 @@ issueInstruction(instruction, currentCycle, registers, PC){
         }
     }
     if(this.remainingCycles === 1 && this.instruction.operationType === "BNE"){
-        if(this.Vj !== this.Vk){
-            
+        this.instruction.setExecutionStartCycle(currentCycle);
+        this.instruction.setExecutionFinishCycle(currentCycle);
+        
             console.log("PC after bne", PC);
-            this.instruction.setExecutionFinishCycle(currentCycle);
-            this.branching = false;
-            
-        }
+            this.branching = false; 
+        
+
+        
     }else if (this.remainingCycles === 2 && this.instruction.operationType === "BNE"){
+        if(this.Vj !== this.Vk){  
         PC = this.A - 1;
+        }
+        else{
+            PC++;
+        }
         this.instruction.setWriteResultCycle(currentCycle);
         this.clearReservationStation(PC);
+        
     }
     if(this.remainingCycles === 1 && this.instruction.operationType === "CALL"){
         registers.write(1, PC + 1 , false, null);
