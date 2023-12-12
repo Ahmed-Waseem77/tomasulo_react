@@ -246,7 +246,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
     }
     if(this.remainingCycles === 11 && this.instruction.operationType === "DIV"){
         this.instruction.setWriteResultCycle(currentCycle);
-        registers.write(this.instruction.rsreg, this.Vj / this.Vk, false, null);
+        registers.write(this.instruction.rsreg, Math.floor(this.Vj / this.Vk), false, null);
         this.clearReservationStation(PC);
     }
     return PC;
