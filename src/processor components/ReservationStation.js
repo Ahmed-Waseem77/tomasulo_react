@@ -121,7 +121,7 @@ issueInstruction(instruction, currentCycle, registers, PC){
     return this.instruction;
 }
 
- updateReservationStation(currentCycle, registers, PC, memory){
+ updateReservationStation(currentCycle, registers, PC, memory, prevInst){
         //check if operands are ready
             if(this.Qj !== null && !registers.isBusy(this.instruction.operand1)){
                 this.Vj = registers.read(this.instruction.operand1);
@@ -132,14 +132,15 @@ issueInstruction(instruction, currentCycle, registers, PC){
                 this.Qk = registers.getQi(this.instruction.operand2);
             }
             console.log("beforeeeee operand1", this.instruction.operand1, "this branch", this.branching);
-            if (this.branching && this.instruction.operationType !== "BNE"){
+           /* if (this.branching && this.instruction.operationType !== "BNE"){
                 if (!this.startedExcution) {
                     console.log("delayed excutation");
                     this.startCycle = null;
                     return PC;
                 }
 
-            }else if (this.Qj !== null || this.Qk !== null) {
+            }*/
+             if (this.Qj !== null || this.Qk !== null) {
                 if (!this.startedExcution) {
                     this.startCycle = currentCycle;
                     return PC;
@@ -159,7 +160,10 @@ issueInstruction(instruction, currentCycle, registers, PC){
                         return PC;
                     }
                 }
-            } 
+            } else if (this.instruction.operationType === "BNE" && prevInst.executionFinishCycle > prevInst.excexecutionStartCycle){
+                this.startCycle = currentCycle;
+                        return PC;
+            }
             
             
         
@@ -193,12 +197,16 @@ issueInstruction(instruction, currentCycle, registers, PC){
     }
     if(this.remainingCycles === 1 && this.instruction.operationType === "BNE"){
         if(this.Vj !== this.Vk){
-            PC = this.A - 1;
+            
             console.log("PC after bne", PC);
             this.instruction.setExecutionFinishCycle(currentCycle);
             this.branching = false;
-            this.clearReservationStation(PC);
+            
         }
+    }else if (this.remainingCycles === 2 && this.instruction.operationType === "BNE"){
+        PC = this.A - 1;
+        this.instruction.setWriteResultCycle(currentCycle);
+        this.clearReservationStation(PC);
     }
     if(this.remainingCycles === 1 && this.instruction.operationType === "CALL"){
         registers.write(1, PC + 1 , false, null);

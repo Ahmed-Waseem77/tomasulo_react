@@ -65,23 +65,19 @@ class TomasuloSimulator {
             console.log("current cycle", this.currentCycle, " start cycle ", this.reservationStations[i].startCycle, " pc ", this.instructionQueue.retCurrentIndex(), "memory ", this.memory);
             const PC1 = this.PC;
             console.log("tomasolueee branch", this.branching);
-            if(this.reservationStations[i].isbranch()){
-                this.branching = this.reservationStations[i].getBranching();
-            }else{
-                this.reservationStations[i].setBranching(this.branching);
-            }
 
-            this.PC =  this.reservationStations[i].updateReservationStation(this.currentCycle, this.registers, this.PC, this.memory);
+            this.PC =  this.reservationStations[i].updateReservationStation(this.currentCycle, this.registers, this.PC, this.memory, this.instructionQueue.jumpToIndex(this.PC - 1));
             console.log("siiii branch", this.reservationStations[i].isbranch());
-            if(this.reservationStations[i].isbranch()){
-                this.branching = this.reservationStations[i].getBranching();
-
-            }else{
-                this.reservationStations[i].setBranching(this.branching);
+            if(this.branching && this.reservationStations[i].instruction.executionFinishCycle==null && !this.reservationStations[i].isbranch()){
+                break;
             }
+            this.branching = this.reservationStations[i].getBranching();
+
+            console.log("branchign",this.branching);
             if(this.branching){
                 this.PC = this.branchingPC;
             }
+
             console.log("PC after update", this.PC);
             }
         }
@@ -97,8 +93,9 @@ class TomasuloSimulator {
                     this.branching = this.reservationStations[i].getBranching();
                     if(this.branching){
                         this.branchingPC = this.PC;
+                    }else {
+                        this.branchingPC = this.PC++;
                     }
-                    this.PC++;
                     break;
                     
                 }
